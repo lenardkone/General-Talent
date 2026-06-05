@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The General Talent Acquisition Company</title>
+<meta name="description" content="An AI-native sourcing firm for hard-to-fill roles." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bone: #F0EEE6;
+    --ink: #181818;
+    --ink-soft: #2C2B28;
+    --muted: #6B6964;
+    --muted-2: #A8A49B;
+    --hairline: #D9D3C5;
+    --coral: #CC785C;
+    --coral-deep: #B0573E;
+    --serif: 'Fraunces', 'Tiempos', Georgia, serif;
+    --mono: 'JetBrains Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow-x: hidden; }
+  body {
+    background: var(--bone);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 32px;
+  }
+
+  /* Subtle paper grain */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    pointer-events: none;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+  }
+
+  ::selection { background: var(--coral); color: var(--bone); }
+  a { color: inherit; text-decoration: none; }
+
+  .top, .bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .top .dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--coral);
+    margin-right: 8px;
+    vertical-align: middle;
+    margin-bottom: 1px;
+  }
+
+  .top .cities { display: flex; gap: 18px; }
+  .top .cities .sep { color: var(--muted-2); }
+
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 1100px;
+    padding: 60px 0;
+  }
+
+  h1 {
+    font-weight: 400;
+    font-size: clamp(40px, 8vw, 124px);
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    font-variation-settings: "opsz" 144, "SOFT" 0;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--coral);
+    font-weight: 400;
+    font-variation-settings: "opsz" 144, "SOFT" 0;
+  }
+
+  .sub {
+    font-size: clamp(18px, 1.8vw, 24px);
+    color: var(--ink-soft);
+    margin-top: 32px;
+    max-width: 56ch;
+    line-height: 1.5;
+    font-variation-settings: "opsz" 18, "SOFT" 0;
+  }
+  .sub strong {
+    color: var(--ink);
+    font-weight: 500;
+    background: linear-gradient(to top, rgba(204, 120, 92, 0.22) 0%, rgba(204, 120, 92, 0.22) 30%, transparent 30%, transparent 100%);
+    padding: 0 2px;
+  }
+
+  .email {
+    margin-top: 64px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+  .email .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .email a {
+    font-size: clamp(22px, 2.4vw, 32px);
+    color: var(--ink);
+    border-bottom: 1px solid var(--coral);
+    padding-bottom: 2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .email a:hover {
+    color: var(--coral);
+  }
+
+  .bottom { margin-top: auto; }
+
+  @media (max-width: 640px) {
+    body { padding: 22px; }
+    .top, .bottom {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      font-size: 9.5px;
+      letter-spacing: 0.12em;
+    }
+    .top .cities { gap: 10px; flex-wrap: wrap; }
+    h1 { font-size: 44px; line-height: 1.0; }
+    .sub { font-size: 17px; margin-top: 24px; max-width: 100%; }
+    .email { margin-top: 44px; flex-direction: column; gap: 8px; align-items: flex-start; }
+    .email a { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="top">
+    <div><span class="dot"></span>The General Talent Acquisition Co.</div>
+    <div class="cities">
+      <span>Chicago</span><span class="sep">·</span>
+      <span>New York</span><span class="sep">·</span>
+      <span>San Francisco</span><span class="sep">·</span>
+      <span>London</span>
+    </div>
+  </div>
+
+  <main>
+    <h1>
+      We find<br/>
+      the people<br/>
+      your team <em>can&rsquo;t.</em>
+    </h1>
+    <p class="sub">A private <strong>AI-native sourcing</strong> firm for hard-to-fill roles at early-stage companies in payments, fintech, and AI infrastructure.</p>
+
+    <div class="email">
+      <span class="label">Inquiries</span>
+      <a href="mailto:partners@generaltalent.ai">partners@generaltalent.ai</a>
+    </div>
+  </main>
+
+  <div class="bottom">
+    <div>An AI-native sourcing firm.</div>
+    <div class="credit">A Loch Inc. Production · MMXXVI</div>
+  </div>
+
+</body>
+</html>
