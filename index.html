@@ -1,190 +1,93 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>The General Talent Acquisition Company</title>
-<meta name="description" content="An AI-native sourcing firm for hard-to-fill roles." />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bone: #F0EEE6;
-    --ink: #181818;
-    --ink-soft: #2C2B28;
-    --muted: #6B6964;
-    --muted-2: #A8A49B;
-    --hairline: #D9D3C5;
-    --coral: #CC785C;
-    --coral-deep: #B0573E;
-    --serif: 'Fraunces', 'Tiempos', Georgia, serif;
-    --mono: 'JetBrains Mono', Menlo, monospace;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; overflow-x: hidden; }
-  body {
-    background: var(--bone);
-    color: var(--ink);
-    font-family: var(--serif);
-    font-weight: 400;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    padding: 32px;
-  }
+// === FULL RUN: linkedin_url, work_experience_years, industry for 500 candidates ===
+// Paste into browser console at app.juicebox.ai (must be logged in).
+// Outputs `juicebox_industry_exp.csv` with 3 columns:
+//   linkedin_url, work_experience_years, industry
+// Merge into your Top500 sheet using linkedin_url as the join key.
+//
+// JWT valid ~1h from copy. If 401: re-copy any /api/profile fetch and swap FB_AUTH below.
 
-  /* Subtle paper grain */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    pointer-events: none;
-    opacity: 0.025;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    mix-blend-mode: multiply;
-  }
+const FB_AUTH = "eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg1NGFhNGMyM2VkZTdiOGNhODc1OWZiMDZlNmExZDU4OTI0MjVkMDYiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiUHJpdGh2aXIgSmhhdmVyaSIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NKZGNTeVA5eDJMcm5FTi14UHE0b1hPM2dZS09KWjdDWW93S1ZuUkNHUy1BdjlvZjJYVD1zOTYtYyIsImlzcyI6Imh0dHBzOi8vc2VjdXJldG9rZW4uZ29vZ2xlLmNvbS9qdWljZWJveC1haS1kZXYiLCJhdWQiOiJqdWljZWJveC1haS1kZXYiLCJhdXRoX3RpbWUiOjE3Nzk1OTc3NjcsInVzZXJfaWQiOiJtMEROQzdURXdwYkZyV0R5Q21kdEFCYUo3VWcyIiwic3ViIjoibTBETkM3VEV3cGJGcldEeUNtZHRBQmFKN1VnMiIsImlhdCI6MTc4MDQxNDE3NiwiZXhwIjoxNzgwNDE3Nzc2LCJlbWFpbCI6InByaXRodmlyLmpoYXZlcmlAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDI3NjMzMTg5NzYzMzAwNDAzNzQiXSwiZW1haWwiOlsicHJpdGh2aXIuamhhdmVyaUBnbWFpbC5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJnb29nbGUuY29tIn19.I9ozzfmH9GhrkU1zYaM-WYMrtpFgqciDZFZyHfx_K0Tm80RU-_KgeOnYutXXYINK_3aTPz0K7H6NTvw_bgUzdBk4NULEetQ_YXMt2GhYQs9TUvZIvvndNu567F99sSHh5gYbWb6B67f3-qC2KCm7GWttWe8qJLvRvB7RmpjZ7V5haryhsH0yLbBVnzjd0x78HwkMkI4VahfoN3OqhVeU-0FniEjJ14IHFeY9Pxs6wJabcAONNBsJJa8Lv7vcoTTin-MiJfPNx6TfZWVdrkPCItMJZHuKwHAedJfDhrBb5DiPc6Bi5_gaEI0w6txdAtP4xQ92e1CeJqBGwgvM_Fm-Hg";
 
-  ::selection { background: var(--coral); color: var(--bone); }
-  a { color: inherit; text-decoration: none; }
+const CONTACT_IDS = ["OLwJYzFs1ddePWxvwxEi","wEULUvpRfb0SBkA2jdTv","5Rj7GaWMCQGd9TH0ALLf","rjCLxceY1RYJx7MmVNu5","QSMXUc7HcJkLmRQM5n4g","fYmbALeOcQeODwqtb0Qn","kNNUL36LtbE8nGMasIjn","ncOlYheKLXnBmaMEBxf0","fxdMjl4aDNyyUduw1AYf","Ht7pcwycTSjVXraBNbgU","O2lXC3m44JmJ9AFSK08X","7fiwkfuVoxi7Ob4bhrEj","DQ9kUTYqU8Up6jRW2NdR","CjqQdzywfbvto9TGgPeb","4n5gEqVZFGSRH76JyBDk","XmEM7ZV73EaT1NPOA627","jIm4Rf8NCHZpe81VA3Qy","SrSNayRjjpQGCycZ1fk0","MdKNkxuXeApKZNQX2V82","2mBJcQXQjZCqIUU4YiH1","UUppASMNCBNoUASlHnye","FJmRPAPLfoiiUCNbWLOD","ab3VGEG1DufTTO2iHHRL","3O1oiqTpccrWKWe4nYsR","waefOe5pQyFRZIiSvslX","anJy2FMwSjsgBmJ0qHML","XxIDNGV0wHFUy7vq20cR","v3ketSEb4S3JGmNaxQgF","Ys3lcnUONh98OqO4iEup","7B6NcMdeMNy2JoGVNSQ9","SijdlVICk8p0uxqtn6EU","mzXymtzdOCy4Uvk2HZmP","wWAHkCKIG1Ry0VyTRBGI","X303JOPsNYNeeYrzZbrL","PH6RRdnbCZfbtksdZMdD","m88jh8Lem5YC2uUVL2YS","XhXWudSy8pQikxElXH5e","T4DAUkTrtHMt8NuHPyYn","r6a10sGG5jaNQSqMYInM","SSDZzbHlX2FFa3DgwUG7","lxTXjMA3mS6tmRiaSDIE","F3zUvztTVIS7NHJEoHlN","GpuKjIF9yMrkNwsIPeOE","AvoWUiAHfGH9wsFoPlAo","9DgmyeYfl42T4JnOJu9j","oevtoNHrXeEIeX5ihWSx","SMioeBsAYAzu6GHVvmyl","9uRKgXUp8Bg9WEVeCOTY","hchhUITHBqIrv2CwD0pa","e8xF6GP2TuOHFv8AG4EB","jXS8KDaM2oHSxC7PayRm","6II0HUWHJxET4kpJ28p0","7lBIeAiFFAA1R1C0Zc9J","6GFDEcZQw0mWCJxu8Ubs","MYd4MPQgbdYdmjCzFMTN","0Vr4pLp57zH4xjUQwIFg","4jEEuzM9vTOiUpT33dxf","lSEGJpEW743OcYwWVrc6","crDI8zfOHrNXmOQDjSbL","416L492xu2QsPNCjYcru","TGSVJ4itmA3oLRmcFid1","ZM3nHbVsjJlUHMPeWJnx","J5lXJsxRCSPHKRyY3Wiq","eBtvaWiIEcj6uzi46qDQ","hJB0dN9g54WBkIjQMiuj","mIeLSXvMPcoNjrF0x04M","sgnqMhssCVmQFH4EVsoh","BLS1If9ZfdpLV6SXvQBQ","FjaNd9oEWkldkjjK1oTH","QixB8abLmkvyUKWgVgdM","ZcK49aDlQQlLpTnoEoem","NmJauTO52tPTgvxBf2A8","sEeFM933Gaz5QltTgg9y","l8IoeztJnSbpz32A7Dmn","Xcb3ErJbXXzNUAwpdWmB","85AOnidIuETTG5CILiv3","MBuvSSxDFvbIiCPQT9Vj","c2GpfcmTcWZi2SwBsRBx","OTgwh0eAtJs2PjmBaaKq","15I7VKPaXwM1QeKDPzwh","PEDMWRQghQ8KjsKpbPBu","SqeBNXWXd634uX3TRbvR","B7sqNe1yTykHAtfZnTJS","2aFCmRmxPOrNejIMd1O0","0Ceo3GNWbRGDzPP7eM3n","uqtxCE2xpibYWY5BzhXE","UEfHTcS3NRLeC0KGPAq5","TNw2EFHqvr1ftXwOOGte","ZcKpEo0oZzVwgfiH6VEh","I9oJsp6fsMvfF0Odjg5U","N9skAqKIVJE6DAqkI6F3","1oh5zzIb4y4sNvbKoYQr","fC5MnHVQjVBkQtQJvPGj","ds2OoCJWNA4OmvVuj6UC","flxYZGlAkp3Yi4j0R5Hk","TMuCPiDp8D2nUIFL1R4f","3RkyA7vnIWeTIYTogCUl","oJcgEVxOSftbG9SILMer","3EV1LeQNSmgWAQrP5BoB","S9vaq8oiOU4EkYV4Kff0","A7ZtPvXs7K5ZV6zFuzDn","uAcbjF4xmBXXOVUP3f4a","6sbccCsx66BL0AJhnTtm","i7Gyc4QvFnpCVfKuVYuG","s7vyJYUi20eSdP2HO1P3","Jq2vi4qzh5AghjKa8bzL","4XW3kQwfiZNz9L8GjmO7","o9JXSfCIOSqDHyQCuQhW","DutKR3FHatPTkIETcMvn","K3wLXP8GuOMQLpeXIf8o","kVnOQHy95gDAZndgHpA8","F1gW3yhhaRhBZSi7GWX4","cyLzqfIwodur3SX3BIPq","5haOwLs6yDBqb92UDiHT","WTKgzn2Z061mNekxcHSh","gXelRS9cjmkTLYraEHHV","45GgGJa4dXXPFF1BWS1m","qhWfIbCKBdJXzdAsGx1N","Ej9QuXzCGvCYSr9oHdEa","06XobR2CQMaVwjRH9lHb","Q546yONH7PmxtyGeMzcb","kIfwaDInRzJXAkpDOGLW","PyaAMtUKzaYXQlTwyihI","v4fgEB0JCpq9VytDvYlL","f5Xd25H3Jnld0NDFKBmb","zHUoIsUGCzxwwH1RiPWl","PVUlx8qizji59vRpoTtx","XvqNHUGCJvt4GRkEfooe","9fH9ms0BDSOO55B4H69M","0Xx0wEM16f5SQPCsBcMR","F8eIXio7Y4L6NvPFa4na","gAutGEpiyui07wer7iqV","b26hrBpx8LRZTAnqmMR0","Y2CGKRnWQxUlJTTUza5S","YiDHwpUk1wMXwGlN66MF","XnNGui5RUTCud3zQhPhU","Nw8TEw2uI12axzC4IOMG","CSxmm9uPZF7hszQ5HfPT","80pPZ4MB8sM7ub2rqkpu","jF0yqL1n2A9zICFfrYcS","oLcRY86rxd8r8cafiND5","oTlffPUfRFGYt3cN6XWn","IBbRfvGAWI32zVy8c1j4","z7izKScvO5omH6BuzG9m","efl3wEApgsa8FuH5KQvh","n5f7h4K3CVrJS31lOTrm","LdMn0h07r9ARot5d6Mdg","8FATxaUX7WQEL27PdKHN","WXK4UK4RlrGkfvGbtnGL","onwFiDaRF3Pp1nwRjdf2","dsZe4ngGkPLRmWcUUkCJ","Yl0kmR9nn0QjK4eLRrcf","soxD3ImhDhMscCcAJW7S","Ue8fmRCQrnVc6RcRM70O","A1pM6er3O9LxePed1PDg","k8rE5JxlAAdOyNh90uGl","jStzJTBsh8xod7tgHOhG","hdBNRXelKa8pRHKB6mIf","SiA5pYd9OlyqQaQVVvWt","RW4yxdK0SiJM8yNQUBNu","MhEPb9kDOJg8uxlPxscT","zESVxJtBlpn6kDgGj9Q2","qjSiv2aoYTzXjEHlokAl","kZ12Y1fHTblAfbX6t8z8","TuR7lgS7bn26skYUB2F4","Iy5s5DPOKstHRCycALR6","4x4zH0BJzdqmeYlzLabQ","PZKxAVfTnWSBNJgxqiUZ","X8g9p0qn3ThJCHt4L9VZ","c0CITSjw6mE6dPJXpGfl","CR9E59NVaV03YLTwlM6J","x0PhWk9TQ4EEwPjtPcml","CvN7qmdV6vbk5NoI34SY","XlTOYoNftvDrwkAA3lqn","4cCe5wbIejuWu9hx2W7c","YOmqrx1Bc9vRiuKqhpAd","7tsWgFwGhv5To0conO7i","g3DmHKxkFlBYPbRfsxcB","jX48jGCmd9auBLHlPCNV","m6l4gwVwOF2MIbATzebz","dGiGz2HZslXchXwQmjDX","PCpx5O8RBzCD67sAnx3g","N0Cv0IVLT3yqDFLGkHRc","81SQa7KDXY3bX40YeZeQ","e84pDcL746kfuJUaJYNl","VHhneUlHqDeqrddWhwUi","2LqKylqFdMxPKJZICsar","1PasQhDxL7islnXZWmJO","F0NUVFednII5Aa5SpASO","gbkrWPPv7G0SXnj2nQhU","rnz5TrCbSBR4AIQX1vpY","3zIMrTOPU2OXyqXBAqp4","lL8prAjN9LuZz8aq4e8D","Nu1B9QcoNUkMzhbYA908","JDPGtIJn8CDtKtOCL2M9","mmP4DQkuHpRNSE5ECTxf","KOeVlfuB5pOmHB4Yn6LE","mDeExWPPg9g7W7Wr03ty","2Ky4qUpMkNCOpJid21iv","TDhMsrAscBc1Wf6sJ0ia","AqkqCzDhzUpKzEWhTGRb","BOd0rCbT7VWGumzJl72F","7Nsv0VDzzrcSSbAjOvIu","RGe3XKuhyuX58JParRmj","7ATxBgU4KJxiZwVtqi1e","iZNGXo48wBrojrwyBXYm","HTOVP3VIrQhJ6W2Q03PQ","Y56rhMeVCU4BGDE03UyH","kZOqoZv1Z24rNMRn77ya","JE812uuumlu0k8CcESgV","9s7V6NUUMF1IdZac0GoT","PuAy4hB8QcvDPMhVzMIc","Cwop6aJop3plQHkXBSUO","tFk9MB3LZMx4coeC8GXE","5g0ox5jeKYiV5v999vHA","vcsNGYLyzG4dfUfyglX6","ZCWMBJ5HeWoMQWjbzMQI","z1anK5lG1a9LRXc8ztnV","R9m0HPb5oYnaQI5yNImU","gN6rrCRIwlMvg0LGJv9i","cIuuLciGw6U5RfIZrBO8","d3GTeLumN4uLWJdL5M8T","bvyg3DXbD9O71RT8DRsZ","pfAA0DwXauAhSNdUWEHG","24GTTT7rQgKNbqIbE4o0","fbdgyKLkWrGEjQilOFW3","5Jb8Gd7zlHEINyglYs1T","UzoD98XE2qKO0ON9v0f4","fGEskUifAR8hqZoM8xXy","96eKMfNYrsy8Ihl9jssi","OBCMv4xTeoN76mgjjm8G","fepxwtTMeFO9M9gnlHgv","tqxOVZ0GFOlDEx4NKpAE","Xm1nyzoPZQ219Fvwgg9l","N0pcrfrlyWW0QvkQMuwg","xRpMHe9WIPLKS6hv6KCM","orpyWpdPwwHKDNT4BeYD","koFH5SLduziwk5kI4Pdu","zUbfIC0yQzR6oYI0J3Gb","ML0Im6mlMogStrqtOO3h","Z8F6LQYaykoysiVlgwnK","iU6bueXZhWTbvEStSywa","Vu8QrvKMvJNizB7yRLoy","LRXK517MmR2f6p1s2YUP","ZBWZeE2yhlW2aYWC3fjE","0ZAl6TK5BtNDVEUrTn5S","yVO0D6zJLEpFsurlONyg","tgwhy7o0vUEQNviyhGNm","klvRTjjnHRs85oJ4MB8k","2mBg1mgjJSLchHj0mxqP","noHYATdjzfactCgyfDRo","RKdHwDr1xd5QV4QT8tkT","KIMxqDumjCuaKPJGdMkL","gE0Y2Vem7klyrwgtxCXF","9UsjmbN4gaZ8Q5c1sNdJ","JoQttzmGhvqCt07cF3id","OujKmvJsAOyEcgoJFwUi","cncAuUNJdAJvz103sL99","o1k0eq2uPB7NCyCUKgZQ","KIK4ZSUmbP2J0rnsayYB","bxKZOF961GEF5dw42mpH","TkCSX6htO5qPCzBvAloV","sXk8i4usgJCNMoqGEYBh","8NFyiSIT0SC9CrWnSbBR","g1uV7KdlotMv1ctYU6B3","SJrTxjVgDsgHrMWPFOMq","ySYO6oyegrv8IZSGRa7x","tup5xnWW4tnCLLlnDUQG","q2f7nISWUQUevdGRbuDl","vKS8a1jgg0TlNEuSN1IN","72IWBotPVIptG2psgB3h","moVyMASZ97bFgAJyDgz4","DVe6QrJ4WsxIaY9DzTk4","aKqg2uLID9a1Ptfie4Dr","TWDUGsQZLaT6yVz5wXUL","rC6JQDPCCrERlmt3sN88","TljOLoORf0QRchacb1nV","gwubR8NgrkhSRem4gVZV","49HZyUvqoyliDDnjwaYI","LUXvICWh1XGnhBnMM3HS","c2frkJCUHiKpoj17DBI3","Ap71io36NAJRVChENhNG","feKQPZ5ysAO5aGqheRQf","mwXGjIMi4tswvECCuDL4","RPkgoiKPaPWsXoVJ1pUB","ASlmtFWWy2VYm9SSwfom","rDREYt6tNWlti9GrPTlV","U6vGT09V5MVNkHXQzBXx","75RtSgTle3M1nCvPuD8F","XADFVB4MGnu1nS0PrmcR","cVwJHwUhh3kWgOZhlgzW","r7tLjYjRdJxee5GaOBIl","UFXIbRWXKeoyPTFCAGKM","1iJh75xQQIX3dHej6Jr5","Juq3mgDeAt6QOBY5Q71M","8D0x9kCRsIw4BEKASbxn","HcbuwXn6u4zkoeo8ODU8","3KsfIBeZRmnlUB3oubH5","uz9G7dCJPH0fuEM5IBBZ","BYSspkYwfgOtCqprEiM8","WGFaCH29MGun7G4nKC5B","eR7adiLqjuUyEmzaPXCJ","y5b5JiM1W3xhB8QtSzq5","wkAAKvIup9Zt6VUa5ULR","olWC4TcBMCY3mp4ARYnY","VpmnXxBxmcCGhAllrYlD","oxfmEIzDioU4fEeFkyas","73xpFrhYx2Tj7BmEDRaz","3qfVW3NGJjV1wYhWZukO","qaVDD0TXgo4p4DAb2amQ","orBu3w4O3awbk7kuYORM","7vV9JpC3n7PGFin39Ax5","PjgD8nWWSjqIRQ2XgW1S","lXosZkCJ6a4e6PBsYqL7","Hx9ESkMX1qN1Uu1ThoAw","iQ9AzxAXZt7Uic6FEXjQ","LPKsZyqMvetU631MaN5X","si2qtLhhQLq1jDPx2RX5","tLj3b0MjHyFmqZi39Ii6","GHA5rfjAhnhVshSHatol","N1aC1rbHRYc4BcoSLBIK","LgfiNQOGFu3awYK7Ix6q","dMpwQM8rQJpjnsqMId6E","Hx69KoCr4ABpn1wD1gPf","7UVlFw2ZxaX95k3AoLav","Ml2ITKKvGrj2HFFMgxz7","R68SvoKwZQNPMf9Db4Gp","KBzFe1qrkI3VYZli8xkQ","uP9Ye9WcoWjDiD7GcMLf","ATj89lfwaVu80TitHmSy","DER69mOYlExNpis2avfd","SuAe3GglT1J2kNeNEQoM","zvwkkM6UHYUw94umTTP2","haaciK8xgiGdHkaofCSC","led45SjkHugwVlxPiiYD","Ftgn28auKRjfdEGZZH8m","yoBIhmeBB9j8y7oBvPFj","g4CPfc6LzxV7O5U1baJX","cR9SJQlYFFJlPLHAavLp","2GJVfdM9L95vEmNAXFJ1","UjybFM9wQHgj0Cg6DVp0","iVbqOVMnZUakmnnVjwdd","4o0CL2w6Pr82Y3bwCcyA","7oRx0ChYvM6sGih63FrS","nHqlJzt6cvjnHXwiQXxA","hlpWFCzAsbkckn0vtxwz","FdMz1aLHYC7s3cnuy5CY","ybLKk3wjD8kDtLynUAxf","1gK3QjY2fazGliJ073K0","ZQ0MKZoLk0HSsejujGaN","hVKXDWogs78yj7JHigxE","bjHtFblgBtflGcChg2do","sQf9xGtC5kA1cNA4dqwK","CBSatW3bYAZXyCouH7d9","kZCkZOFgCJGOSozlbpsL","NvxnCA2RRcuZvBL3FWEE","HZNt6HskqBOUT9hiQM2W","qDiKerKPTFCW9528cMC3","iSlObCtzmpETt3LWpoTd","jWT3vToU7auvnQc8RNKw","IBKsNad657GQISjRvT9M","S1f5BVYFux9XHETSoX5G","joEoX1a0od3JxZcohchp","Yq8Vmgdf0cpAKcoHpVny","XLNQnm3CBYGDe35YYZ6z","0Z9b6jNn8rz4QrZH5lkG","4lPrILp8DyJxSWo0nzmF","TEfDYWkeX7MFhNbxBWqG","Ic6zun0Wn3hw19p3kkRp","8AUFZ3aYJAUY6ATKVk6N","la9NMqnA8EXv1g1gn2MQ","kNvsdGqIQnkMlujfhaBy","XnHQF04i8R8jO3ldOLeA","hu2Pst81BoDGqJ9WlltZ","fmcfi4bUPL2F4KRS6AEO","mHEuuQSy7R01qTFXGpQZ","hW1WIMLGbnWRQ8X60Dpo","lmErL8im6I1pchOenh1p","edZ6z9FwAGOeN9pvUfIr","YVJXCO0jIeZJoYGUsRBy","bIIfj0LtNfgj3xB0AEKb","8SfrHwwsRRgvJIPcxdGM","Xywc6kGKqDI7Ui10lmxU","1RUBMmoAX32KFLCEpOuB","oWAL8ryJ582SapXioQCI","cGsKdNJbjhCfyGyR7qZx","hq6x4zj86E5uDyYeSlPR","PXO4cEnF8J89LiZO725v","ud8i4eUjEM24GKo6nx9P","Vt6wuypLV9pvC9qzjpmE","ZHXOr2ZWx997EWDn1h9P","l9k0juVDptoeYwrbDbL8","IKrrD6jiyUxmc6AIu4M2","2Jz9eH57RAwIw8sEuyLm","raHEUF485Ow6xPhGHAr2","Ookz2HvwcxcRddXY4Dkn","rlZlIKTmJ4b8fbRlRRF5","Qv44dRzh0F0FINiiYmSQ","5e6biJNDnzfck44fv2Ua","7hjJXWzCu7EePv4WCXq5","mLYDtIcYpu3pMlDU6gjl","GgHlvLJ56hpteowUCdOt","Vm7o0OpZmGVHzcJ8VVFI","F7vGxDFO3etaTRmxIGEQ","PUb1E6SK0FulkBuG5vy8","IouvbDRp6zNXEw9fS5pU","Vpi2jiAto5srnBTUsAjS","pneUABbf5uayWzBfo7Tj","qfhNhjk3asGBUjQEzn6B","1N6yofkb1m7JU96jUDtY","5uvmVOMXUYqoAykxSA2s","C2Ta7P7PeSS15U6JxXPo","RSKy7CScYXh3ddcKtkV1","1M5iQqyxYaUY35Flu8lw","ntlAwCAFeZ3crtglcSHJ","zjCATlO6Q0jy4WKHdS1Q","WFtDM229GAd5pq0JLTRJ","ne7pd8yp40gIRIYQdR8L","C63GT6lToR2KaR2ueEgO","rHV7kGejVLb2PFxc1raF","x5LnwzuF4XNhA1bXaeSQ","gEaJD3i9xpBf40gSoVZF","7U7Hm6jUIwjg4KQOEqMg","2ePpMtH66jSUwuOCj6YR","rMYlO8WXpG95J9tKGsSE","q1Oecp39wXe2XclaazaC","UZZX4IiOE31LS0TtVxgU","gQG5aulmUDFwdRbXzUTV","AhrpNZYMVL5FpYESZYoA","WrQQnDsnxrfE63VqqEDt","RfwZbvI65WQVtNbuBFyn","jj1EWbmAtRU5KXFOgRYb","TTXFWi7VIT8wwZ0fn79A","1xiqDG8j1iPo0TANLF8n","qDo5nnGpV7M7IaiZKK7S","ZP2eEXoix3LURbxveXee","g2ysT9XNArESLfQ2bY92","tCo0H13mFeTrrZvqzWQa","KR3u3AVvp66xHFfhukiW","Q2nOkYXmTAwCPlmgWXPk","TfVyDwHo9H9IDRnekoqd","kvPNAKX1JUcXFO5Tox9I","eIhhuVmTx7o1paYxmdNQ","TXkT2Yu8idMi0vIEoN3z","jRAMDkMkQRSHms0trruu","uoTu65H1W8gBsOYDIMuz","mbVBE1lCXehBmujvlynn","ruSz9dvKpiSRKus5ReLO","xZZu0M1QVoiEGgQScAwM","7QebGTrmedredFqTkVTF","aDCKD1OdYJ2Bk1JEUelu","1HDHtQMPoo4lW07QQer7","lt1ha0MB6GGtiSisn0PB","lWsrYJHqdMlMW2B2It8k","aTMxJDUB7j5bMgjKqvm3","pbb1njJ671JpAoGBK7NI","labFmBWVlaKU6x2gnPU5","u5muo2ymFDYBM1Grwgev","KkHYGAdcubLDWKXCqR8B","HJw6MSPfw2nW8iQOStD3","Ud4xmYjBy78btzZP5Ux8","NxjikwcYTF4GJUMdkblH","tbXEOWX7Xkt7RMV2o0Sq","RRIR0y5jbhxrOiMOIzr3","PwtzvHE9kEGhBKDFXk0O","edQyWsSLKqSYwZMDLELu","0NfFwwbjqM95sd5wjND2","oLdhowDbktNwvVXt2lyP","gx2JtIUxglpzmdzPFKfV","l8UBZLeOuDNxgQk0egAv","NyZkeSFno4Ipqgsxi7Ry","UMpn9MNFSaHkT1PLXzGm","PrCnlpJiWdFQIn3LNZIE","riu2rhw1b090zTgnTbMg","gN8cRTLdhBXWB8lYSyyQ","8gF1j8lSe5mFmsQ1of9Z","uvEU338fcX7EiDb5VpcC","t6kb50PUrUb7vfOt2AiQ","myGuvgi0VwNDfumgVN06","2TAauIDNhKfZPptHydSO","WSO6NfhprqzxJHe8dNaH","hyT1mbaR82MdexhHVKVj","RFng5opfRndyZ7sdOQVs","KpQqG7z1fYk498K6KrDj","7G6DqRm83JxTpvcL5lmG","sOLFqQ0dgWue9HCiULzP","cfVbIdhuu99JJ6CKLS3h","ORrlwFuOQkJ8iSgd0QCO","yJxLhZyAQ4QFpDw1uagw","YKgIuasOGIi5924pgbme","35Hvx0rf18NolrMPkHWl","pYCMCPwRdY5RYsv7sxp3","NvDVuJctlU5BKLrAvNoZ","coOyocYXFjTM6NXVnTp9","a11q6OKswC7sbGlvPkBN","BMW7rb1zcDQnctCfymSC","MWqqZymMSVnaApXF2jU9","x8k4GfrV053yBSSXbhek","DNQCUXEvaRQwSPqYW7kz","P6Ain6qjImwuqIjRMBPn"];
 
-  .top, .bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
+window.__results2 = window.__results2 || {};
+window.__errors2  = window.__errors2  || [];
 
-  .top .dot {
-    display: inline-block;
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--coral);
-    margin-right: 8px;
-    vertical-align: middle;
-    margin-bottom: 1px;
-  }
+const HEADERS = { "accept": "*/*", "content-type": "application/json", "fbauthorization": FB_AUTH };
+const DELAY_MS = 300;
 
-  .top .cities { display: flex; gap: 18px; }
-  .top .cities .sep { color: var(--muted-2); }
+function pickCurrentCompany(p) {
+  const exp = p?.experience ?? [];
+  if (!exp.length) return null;
+  return exp.find(e => e.is_primary) ?? exp.find(e => e?.company?.id && e.company.id === p.job_company_id) ?? exp[0];
+}
 
-  main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    max-width: 1100px;
-    padding: 60px 0;
-  }
+function csvEscape(v) {
+  if (v == null) return "";
+  const s = String(v);
+  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
 
-  h1 {
-    font-weight: 400;
-    font-size: clamp(40px, 8vw, 124px);
-    line-height: 0.98;
-    letter-spacing: -0.025em;
-    color: var(--ink);
-    font-variation-settings: "opsz" 144, "SOFT" 0;
-  }
-  h1 em {
-    font-style: italic;
-    color: var(--coral);
-    font-weight: 400;
-    font-variation-settings: "opsz" 144, "SOFT" 0;
-  }
+function downloadCsv(rows) {
+  const header = ["linkedin_url","work_experience_years","industry"];
+  const lines = [header.join(",")];
+  for (const r of rows) lines.push(header.map(k => csvEscape(r[k])).join(","));
+  const blob = new Blob([lines.join("\n")], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "juicebox_industry_exp.csv";
+  a.click();
+}
 
-  .sub {
-    font-size: clamp(18px, 1.8vw, 24px);
-    color: var(--ink-soft);
-    margin-top: 32px;
-    max-width: 56ch;
-    line-height: 1.5;
-    font-variation-settings: "opsz" 18, "SOFT" 0;
-  }
-  .sub strong {
-    color: var(--ink);
-    font-weight: 500;
-    background: linear-gradient(to top, rgba(204, 120, 92, 0.22) 0%, rgba(204, 120, 92, 0.22) 30%, transparent 30%, transparent 100%);
-    padding: 0 2px;
-  }
+(async () => {
+  const total = CONTACT_IDS.length;
+  console.log(`Fetching ${total} profiles (delay ${DELAY_MS}ms)...`);
+  const t0 = performance.now();
+  let aborted = false;
 
-  .email {
-    margin-top: 64px;
-    display: inline-flex;
-    align-items: baseline;
-    gap: 16px;
-  }
-  .email .label {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .email a {
-    font-size: clamp(22px, 2.4vw, 32px);
-    color: var(--ink);
-    border-bottom: 1px solid var(--coral);
-    padding-bottom: 2px;
-    transition: color 0.2s, border-color 0.2s;
-  }
-  .email a:hover {
-    color: var(--coral);
-  }
+  for (let i = 0; i < total; i++) {
+    const cid = CONTACT_IDS[i];
+    if (window.__results2[cid]) continue; // resume support
 
-  .bottom { margin-top: auto; }
+    try {
+      const r = await fetch(`/api/profile?contact_id=${cid}`, { method: "GET", credentials: "include", headers: HEADERS });
 
-  @media (max-width: 640px) {
-    body { padding: 22px; }
-    .top, .bottom {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 6px;
-      font-size: 9.5px;
-      letter-spacing: 0.12em;
+      if (r.status === 401 || r.status === 403) {
+        console.error(`[${i+1}/${total}] AUTH FAILED (${r.status}) — token expired. Stopping.`);
+        window.__errors2.push({ cid, status: r.status, note: "auth" });
+        aborted = true;
+        break;
+      }
+
+      if (!r.ok) {
+        window.__errors2.push({ cid, status: r.status });
+        window.__results2[cid] = { linkedin_url: "", work_experience_years: "", industry: "" };
+      } else {
+        const data = await r.json();
+        const p = data?.result ?? {};
+        const current = pickCurrentCompany(p);
+        const months = p.total_experience_months;
+        window.__results2[cid] = {
+          linkedin_url: p.linkedin_url ? `https://${p.linkedin_url}` : "",
+          work_experience_years: (months != null) ? Math.round(months / 12) : "",
+          industry: current?.company?.industry ?? "",
+        };
+      }
+    } catch (e) {
+      window.__errors2.push({ cid, error: e.message });
+      window.__results2[cid] = { linkedin_url: "", work_experience_years: "", industry: "" };
     }
-    .top .cities { gap: 10px; flex-wrap: wrap; }
-    h1 { font-size: 44px; line-height: 1.0; }
-    .sub { font-size: 17px; margin-top: 24px; max-width: 100%; }
-    .email { margin-top: 44px; flex-direction: column; gap: 8px; align-items: flex-start; }
-    .email a { font-size: 20px; }
+
+    if ((i + 1) % 25 === 0 || i + 1 === total) {
+      const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
+      console.log(`  ${i+1}/${total} — errors: ${window.__errors2.length} (${elapsed}s)`);
+    }
+    await new Promise(r => setTimeout(r, DELAY_MS));
   }
-</style>
-</head>
-<body>
 
-  <div class="top">
-    <div><span class="dot"></span>The General Talent Acquisition Co.</div>
-    <div class="cities">
-      <span>Chicago</span><span class="sep">·</span>
-      <span>New York</span><span class="sep">·</span>
-      <span>San Francisco</span><span class="sep">·</span>
-      <span>London</span>
-    </div>
-  </div>
-
-  <main>
-    <h1>
-      We find<br/>
-      the people<br/>
-      your team <em>can&rsquo;t.</em>
-    </h1>
-    <p class="sub">A private <strong>AI-native sourcing</strong> firm for hard-to-fill roles at early-stage companies in payments, fintech, and AI infrastructure.</p>
-
-    <div class="email">
-      <span class="label">Inquiries</span>
-      <a href="mailto:partners@generaltalent.ai">partners@generaltalent.ai</a>
-    </div>
-  </main>
-
-  <div class="bottom">
-    <div>An AI-native sourcing firm.</div>
-    <div class="credit">A Loch Inc. Production · MMXXVI</div>
-  </div>
-
-</body>
-</html>
+  const rows = CONTACT_IDS.map(cid => window.__results2[cid]).filter(Boolean);
+  console.log(`Done. ${rows.length} rows. errors: ${window.__errors2.length}`);
+  if (window.__errors2.length) console.log("First errors:", window.__errors2.slice(0, 5));
+  if (rows.length) downloadCsv(rows);
+  if (aborted) console.warn("Aborted (auth). Swap FB_AUTH and re-paste to resume.");
+})();
