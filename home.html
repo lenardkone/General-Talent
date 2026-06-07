@@ -12,24 +12,36 @@
   <style>
     :root {
       --bone: #F0EEE6;
-      --ink: #FFFFFF;
-      --ink-soft: rgba(255,255,255,0.85);
-      --muted: rgba(255,255,255,0.6);
-      --muted-2: rgba(255,255,255,0.35);
-      --hairline: rgba(255,255,255,0.15);
-      --coral: #40916C;
-      --glass: rgba(255,255,255,0.07);
+      --bg: #F0EEE6;
+      --ink: #0D0D0D;
+      --ink-soft: rgba(0,0,0,0.8);
+      --muted: rgba(0,0,0,0.5);
+      --muted-2: rgba(0,0,0,0.32);
+      --hairline: rgba(0,0,0,0.1);
+      --coral: #2563EB;
+      --glass: rgba(0,0,0,0.04);
       --serif: 'Playfair Display', Georgia, serif;
       --sans: 'Instrument Sans', system-ui, sans-serif;
       --mono: 'Space Mono', Menlo, monospace;
       --px: clamp(28px, 5vw, 80px);
     }
 
+    [data-theme="dark"] {
+      --bg: #000000;
+      --ink: #FFFFFF;
+      --ink-soft: rgba(255,255,255,0.85);
+      --muted: rgba(255,255,255,0.6);
+      --muted-2: rgba(255,255,255,0.35);
+      --hairline: rgba(255,255,255,0.15);
+      --coral: #60A5FA;
+      --glass: rgba(255,255,255,0.07);
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100vh; overflow: hidden; }
 
     body {
-      background: #000000;
+      background: var(--bg);
       color: var(--ink);
       font-family: var(--sans);
       font-weight: 400;
@@ -40,19 +52,33 @@
       height: 100vh;
     }
 
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(0,0,0,0.12) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    [data-theme="dark"] body::before {
+      background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+    }
+
     nav, main, footer { position: relative; z-index: 1; }
 
     ::selection { background: var(--coral); color: var(--bone); }
     a { color: inherit; text-decoration: none; }
 
-    /* ── NAV ── */
+    /* NAV */
     nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 20px var(--px);
       border-bottom: 1px solid var(--hairline);
-      background: #000000;
+      background: var(--bg);
       font-family: var(--mono);
       font-size: 10.5px;
       letter-spacing: 0.16em;
@@ -72,7 +98,7 @@
       font-size: 16px;
       letter-spacing: 0;
       text-transform: none;
-      color: #FFFFFF;
+      color: var(--ink);
     }
 
     .nav-brand img {
@@ -80,29 +106,16 @@
       flex-shrink: 0;
     }
 
-    @keyframes breathe {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.35; }
-    }
-
-    .nav-cities {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
-    .nav-cities .sep { color: var(--muted-2); }
-
-    /* ── MAIN ── */
+    /* MAIN */
     main {
       flex: 1;
       min-height: 0;
-      display: grid;
-      grid-template-columns: 1fr 42%;
     }
 
     .hero-content {
       display: flex;
       flex-direction: column;
+      height: 100%;
       padding: clamp(40px, 6vw, 80px) var(--px) clamp(80px, 10vw, 140px);
     }
 
@@ -112,50 +125,11 @@
       align-items: center;
     }
 
-    .hero-image {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
-    }
-
-    .bubble {
-      position: absolute;
-      border-radius: 100px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      display: inline-flex;
-      padding: 20px 32px;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      color: #FFF;
-      font-family: 'Outfit', var(--sans);
-      font-size: 16px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 100%;
-      white-space: nowrap;
-      z-index: 2;
-    }
-
-    .bubble-1 { top: 22%;  left: 18%; }
-    .bubble-2 { top: 46%;  right: 16%; }
-    .bubble-3 { top: 68%;  left: 14%; }
-
     h1 {
       font-family: 'Aspekta', var(--sans);
-      font-weight: 300;
+      font-weight: 200;
       font-size: clamp(42px, 7.5vw, 108px);
-      line-height: 0.94;
+      line-height: 1.2;
       letter-spacing: -0.03em;
       color: var(--ink);
     }
@@ -163,15 +137,19 @@
     .h1-line {
       display: block;
       overflow: hidden;
+      padding-bottom: 0.12em;
+      margin-bottom: -0.12em;
+    }
+    .h1-text {
+      display: block;
     }
 
     h1 em {
-      font-style: italic;
+      font-style: normal;
       color: var(--coral);
       font-weight: 400;
     }
 
-    /* Sub + email side by side, ruled off from headline */
     .below {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -221,7 +199,7 @@
 
     .email-block a:hover { color: var(--coral); }
 
-    /* ── FOOTER ── */
+    /* FOOTER */
     footer {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -241,7 +219,7 @@
       z-index: 10;
     }
 
-    /* ── RESPONSIVE ── */
+    /* RESPONSIVE */
     @media (max-width: 1100px) {
       .below {
         grid-template-columns: 1fr;
@@ -257,32 +235,13 @@
     @media (max-width: 768px) {
       html, body { height: auto; overflow: auto; }
 
-      .nav-cities { display: none; }
-
-      main { grid-template-columns: 1fr; }
-
-      .hero-content {
-        padding: 56px 24px 100px;
-      }
-
-      .heading-area {
-        padding-bottom: 64px;
-      }
-
-      .below {
-        gap: 40px;
-        padding-top: 36px;
-      }
-
+      .hero-content { padding: 56px 24px 100px; }
+      .heading-area { padding-bottom: 64px; }
+      .below { gap: 40px; padding-top: 36px; }
       .email-block { order: 0; }
-
       .email-label { margin-bottom: 14px; }
-
       .email-block a { font-size: clamp(22px, 6.5vw, 32px); }
-
       .sub { font-size: 16px; line-height: 1.8; }
-
-      .hero-image { display: none; }
 
       footer { padding-bottom: 20px; }
     }
@@ -292,6 +251,27 @@
       h1 { font-size: 52px; line-height: 1.0; }
       footer { flex-direction: column; align-items: flex-start; gap: 5px; }
     }
+
+    /* THEME TOGGLE */
+    .theme-toggle {
+      background: none;
+      border: 1px solid var(--hairline);
+      border-radius: 100px;
+      padding: 5px 12px;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.15s, border-color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { color: var(--ink); border-color: var(--muted); }
+    .theme-toggle svg { width: 12px; height: 12px; fill: currentColor; }
   </style>
 </head>
 <body>
@@ -301,26 +281,26 @@
       <img src="assets/logo-alt.svg" alt="General Talent logo" />
       <span>General Talent Co.</span>
     </div>
-    <div class="nav-cities">
-      <span>Chicago</span><span class="sep">·</span>
-      <span>New York</span><span class="sep">·</span>
-      <span>San Francisco</span><span class="sep">·</span>
-      <span>London</span>
-    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <svg id="themeIcon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 1a7 7 0 1 0 6.33 9.988A5.5 5.5 0 0 1 6.012 2.67 7.02 7.02 0 0 0 8 1z"/>
+      </svg>
+      <span id="themeLabel">Dark</span>
+    </button>
   </nav>
 
   <main>
     <div class="hero-content">
       <div class="heading-area">
         <h1>
-          <span class="h1-line">We find</span>
-          <span class="h1-line">the people</span>
-          <span class="h1-line">your team <em>can&rsquo;t.</em></span>
+          <span class="h1-line"><span class="h1-text">Sourcing <em>intelligence</em></span></span>
+          <span class="h1-line"><span class="h1-text">for the roles</span></span>
+          <span class="h1-line"><span class="h1-text">that matter most.</span></span>
         </h1>
       </div>
 
       <div class="below">
-        <p class="sub">A private <strong>AI-native sourcing</strong> firm for hard-to-fill roles at early-stage companies in payments, fintech, and AI infrastructure.</p>
+        <p class="sub"><strong>AI-native sourcing firm</strong> for hard-to-fill roles at the fastest growing companies in the world across payments, fintech, and AI infrastructure.</p>
 
         <div class="email-block">
           <span class="email-label">Inquiries</span>
@@ -329,59 +309,40 @@
       </div>
 
     </div>
-
-    <div class="hero-image">
-      <img src="https://images.unsplash.com/photo-1491911923017-19f90d8d7f83?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" />
-      <div class="bubble bubble-1">Payments</div>
-      <div class="bubble bubble-2">AI Infrastructure</div>
-      <div class="bubble bubble-3">Financial Tech</div>
-    </div>
   </main>
 
   <footer>
-    <div>An AI-native sourcing firm.</div>
+    <div>Chicago · New York · San Francisco · London</div>
     <div>A Loch Inc. Production · MMXXVI</div>
   </footer>
 
   <script>
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-    // Set initial states
     gsap.set("nav", { y: -16, opacity: 0 });
-    gsap.set(".h1-line", { y: "110%", opacity: 0 });
+    gsap.set(".h1-text", { y: "110%", opacity: 0 });
     gsap.set(".below", { y: 28, opacity: 0 });
-    gsap.set(".bubble", { scale: 0.88, opacity: 0 });
     gsap.set("footer", { y: 16, opacity: 0 });
 
     tl
       .to("nav", { y: 0, opacity: 1, duration: 0.55 })
-      .to(".h1-line", {
-        y: "0%",
-        opacity: 1,
-        duration: 0.75,
-        stagger: 0.1,
-      }, "-=0.2")
+      .to(".h1-text", { y: "0%", opacity: 1, duration: 0.75, stagger: 0.1 }, "-=0.2")
       .to(".below", { y: 0, opacity: 1, duration: 0.6 }, "-=0.35")
-      .to(".bubble", {
-        scale: 1,
-        opacity: 1,
-        duration: 0.6,
-        stagger: 0.15,
-        ease: "back.out(1.4)",
-      }, 0.5)
       .to("footer", { y: 0, opacity: 1, duration: 0.5 }, "-=0.4");
 
-    // Continuous floating loops (each bubble gets a unique offset)
-    document.querySelectorAll(".bubble").forEach((el, i) => {
-      const dir = i % 2 === 0 ? 1 : -1;
-      gsap.to(el, {
-        y: dir * 10,
-        duration: 3 + i * 0.6,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        delay: i * 0.4,
-      });
+    const moonPath = "M8 1a7 7 0 1 0 6.33 9.988A5.5 5.5 0 0 1 6.012 2.67 7.02 7.02 0 0 0 8 1z";
+    const sunPath = "M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-1 0V.5A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-1 0V13.5A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5H14a.5.5 0 0 1 0-1h1.5a.5.5 0 0 1 .5.5zM0 8a.5.5 0 0 1 .5-.5H2a.5.5 0 0 1 0 1H.5A.5.5 0 0 1 0 8zm11.314-4.9a.5.5 0 0 1 0 .707l-1.06 1.06a.5.5 0 0 1-.707-.707l1.06-1.06a.5.5 0 0 1 .707 0zm-7.07 7.07a.5.5 0 0 1 0 .707L3.183 12a.5.5 0 0 1-.707-.707l1.06-1.06a.5.5 0 0 1 .707 0zm7.778.707a.5.5 0 0 1-.707 0l-1.06-1.06a.5.5 0 1 1 .707-.707l1.06 1.06a.5.5 0 0 1 0 .707zM4.244 4.11a.5.5 0 0 1-.707 0L2.476 3.05a.5.5 0 1 1 .707-.707l1.06 1.06a.5.5 0 0 1 0 .707z";
+
+    const toggle = document.getElementById("themeToggle");
+    const icon = document.getElementById("themeIcon").querySelector("path");
+    const label = document.getElementById("themeLabel");
+    let dark = false;
+
+    toggle.addEventListener("click", () => {
+      dark = !dark;
+      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      icon.setAttribute("d", dark ? sunPath : moonPath);
+      label.textContent = dark ? "Light" : "Dark";
     });
   </script>
 
