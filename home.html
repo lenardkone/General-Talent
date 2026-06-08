@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The General Talent Acquisition Company</title>
   <meta name="description" content="An AI-native sourcing firm for hard-to-fill roles." />
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/assets/favicon-48.png" type="image/png" sizes="48x48">
+  <link rel="icon" href="/assets/favicon-96.png" type="image/png" sizes="96x96">
+  <link rel="icon" href="/assets/logo-alt.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;1,400;1,500&family=Aspekta:wght@100..900&family=Outfit:wght@500&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Space+Mono&display=swap" rel="stylesheet">
@@ -63,7 +68,7 @@
     }
 
     [data-theme="dark"] body::before {
-      background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+      background-image: radial-gradient(circle, rgba(255,255,255,0.16) 1px, transparent 1px);
     }
 
     nav, main, footer { position: relative; z-index: 1; }
@@ -199,6 +204,10 @@
 
     .email-block a:hover { color: var(--coral); }
 
+    .locations-banner {
+      display: none;
+    }
+
     /* FOOTER */
     footer {
       position: fixed;
@@ -243,13 +252,27 @@
       .email-block a { font-size: clamp(22px, 6.5vw, 32px); }
       .sub { font-size: 16px; line-height: 1.8; }
 
+      .locations-banner {
+        display: block;
+        margin-top: 48px;
+        padding-top: 36px;
+        border-top: 1px solid var(--hairline);
+        font-family: var(--mono);
+        font-size: 10.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted-2);
+        line-height: 1.6;
+      }
+
+      .footer-locations { display: none; }
+
       footer { padding-bottom: 20px; }
     }
 
     @media (max-width: 520px) {
       .hero-content { padding: 48px 20px 96px; }
       h1 { font-size: 52px; line-height: 1.0; }
-      footer { flex-direction: column; align-items: flex-start; gap: 5px; }
     }
 
     /* THEME TOGGLE */
@@ -308,11 +331,13 @@
         </div>
       </div>
 
+      <div class="locations-banner">Chicago · New York · San Francisco · London</div>
+
     </div>
   </main>
 
   <footer>
-    <div>Chicago · New York · San Francisco · London</div>
+    <div class="footer-locations">Chicago · New York · San Francisco · London</div>
     <div>A Loch Inc. Production · MMXXVI</div>
   </footer>
 
@@ -321,13 +346,13 @@
 
     gsap.set("nav", { y: -16, opacity: 0 });
     gsap.set(".h1-text", { y: "110%", opacity: 0 });
-    gsap.set(".below", { y: 28, opacity: 0 });
+    gsap.set(".below, .locations-banner", { y: 28, opacity: 0 });
     gsap.set("footer", { y: 16, opacity: 0 });
 
     tl
       .to("nav", { y: 0, opacity: 1, duration: 0.55 })
       .to(".h1-text", { y: "0%", opacity: 1, duration: 0.75, stagger: 0.1 }, "-=0.2")
-      .to(".below", { y: 0, opacity: 1, duration: 0.6 }, "-=0.35")
+      .to(".below, .locations-banner", { y: 0, opacity: 1, duration: 0.6 }, "-=0.35")
       .to("footer", { y: 0, opacity: 1, duration: 0.5 }, "-=0.4");
 
     const moonPath = "M8 1a7 7 0 1 0 6.33 9.988A5.5 5.5 0 0 1 6.012 2.67 7.02 7.02 0 0 0 8 1z";
